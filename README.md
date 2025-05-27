@@ -1,8 +1,10 @@
 ![Claude Code Action responding to a comment](https://github.com/user-attachments/assets/1d60c2e9-82ed-4ee5-b749-f9e021c85f4d)
 
-# Claude Code Action
+# Claude Code Action (Unity Consulting Fork)
 
-A general-purpose [Claude Code](https://claude.ai/code) action for GitHub PRs and issues that can answer questions and implement code changes. This action listens for a trigger phrase in comments and activates Claude act on the request. It supports multiple authentication methods including Anthropic direct API, Amazon Bedrock, and Google Vertex AI.
+A general-purpose [Claude Code](https://claude.ai/code) action for GitHub PRs and issues that can answer questions and implement code changes. This action listens for a trigger phrase in comments and activates Claude act on the request. It supports multiple authentication methods including Anthropic direct API, Amazon Bedrock, Google Vertex AI, and Max plan for self-hosted runners.
+
+This is a fork of [anthropics/claude-code-action](https://github.com/anthropics/claude-code-action) by Unity Consulting that adds support for Claude Code Max plan on self-hosted runners.
 
 ## Features
 
@@ -53,7 +55,7 @@ jobs:
   claude-response:
     runs-on: ubuntu-latest
     steps:
-      - uses: anthropics/claude-code-action@beta
+      - uses: unity-consulting/claude-code-action@main
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -159,7 +161,7 @@ on:
       - "src/api/**/*.ts"
 
 steps:
-  - uses: anthropics/claude-code-action@beta
+  - uses: unity-consulting/claude-code-action@main
     with:
       direct_prompt: |
         Update the API documentation in README.md to reflect
@@ -183,7 +185,7 @@ jobs:
       github.event.pull_request.user.login == 'developer1' ||
       github.event.pull_request.user.login == 'external-contributor'
     steps:
-      - uses: anthropics/claude-code-action@beta
+      - uses: unity-consulting/claude-code-action@main
         with:
           direct_prompt: |
             Please provide a thorough review of this pull request.
@@ -201,7 +203,7 @@ Perfect for automatically reviewing PRs from new team members, external contribu
 4. **Branch Management**: Creates new PRs for human authors, pushes directly for Claude's own PRs
 5. **Communication**: Posts updates at every step to keep you informed
 
-This action is built on top of [`anthropics/claude-code-base-action`](https://github.com/anthropics/claude-code-base-action).
+This action is built on top of [`unity-consulting/claude-code-base-action`](https://github.com/unity-consulting/claude-code-base-action).
 
 ## Capabilities and Limitations
 
@@ -242,7 +244,7 @@ Claude does **not** have access to execute arbitrary Bash commands by default. I
 **Note**: If your repository has a `.mcp.json` file in the root directory, Claude will automatically detect and use the MCP server tools defined there. However, these tools still need to be explicitly allowed via the `allowed_tools` configuration.
 
 ```yaml
-- uses: anthropics/claude-code-action@beta
+- uses: unity-consulting/claude-code-action@main
   with:
     allowed_tools: "Bash(npm install),Bash(npm run test),Edit,Replace,NotebookEditCell"
     disallowed_tools: "TaskOutput,KillTask"
@@ -256,7 +258,7 @@ Claude does **not** have access to execute arbitrary Bash commands by default. I
 Use a specific Claude model:
 
 ```yaml
-- uses: anthropics/claude-code-action@beta
+- uses: unity-consulting/claude-code-action@main
   with:
     # model: "claude-3-5-sonnet-20241022"  # Optional: specify a different model
     # ... other inputs
@@ -284,25 +286,45 @@ Use provider-specific model names based on your chosen provider:
 
 ```yaml
 # For direct Anthropic API (default)
-- uses: anthropics/claude-code-action@beta
+- uses: unity-consulting/claude-code-action@main
   with:
     anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
     # ... other inputs
 
 # For Amazon Bedrock with OIDC
-- uses: anthropics/claude-code-action@beta
+- uses: unity-consulting/claude-code-action@main
   with:
     model: "anthropic.claude-3-7-sonnet-20250219-beta:0" # Cross-region inference
     use_bedrock: "true"
     # ... other inputs
 
 # For Google Vertex AI with OIDC
-- uses: anthropics/claude-code-action@beta
+- uses: unity-consulting/claude-code-action@main
   with:
     model: "claude-3-7-sonnet@20250219"
     use_vertex: "true"
     # ... other inputs
 ```
+
+### Max Plan Support for Self-Hosted Runners
+
+If you're using self-hosted runners with Claude Code Max plan authentication, you can skip API key configuration:
+
+```yaml
+# For self-hosted runners with Max plan
+- uses: unity-consulting/claude-code-action@main
+  with:
+    max_plan: "true"
+    # No API key needed - uses local Claude Code installation
+```
+
+**Requirements:**
+
+- Self-hosted runner with Claude Code installed
+- Claude Code authenticated with Max plan
+- Runner must have access to the repository
+
+See [unity-consulting/claude-code-base-action](https://github.com/unity-consulting/claude-code-base-action) for detailed Max plan setup instructions.
 
 ### OIDC Authentication for Bedrock and Vertex
 
@@ -323,7 +345,7 @@ Both AWS Bedrock and GCP Vertex AI require OIDC authentication.
     app-id: ${{ secrets.APP_ID }}
     private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-- uses: anthropics/claude-code-action@beta
+- uses: unity-consulting/claude-code-action@main
   with:
     model: "anthropic.claude-3-7-sonnet-20250219-beta:0"
     use_bedrock: "true"
@@ -348,7 +370,7 @@ Both AWS Bedrock and GCP Vertex AI require OIDC authentication.
     app-id: ${{ secrets.APP_ID }}
     private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-- uses: anthropics/claude-code-action@beta
+- uses: unity-consulting/claude-code-action@main
   with:
     model: "claude-3-7-sonnet@20250219"
     use_vertex: "true"
