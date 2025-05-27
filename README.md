@@ -323,6 +323,8 @@ If you're using self-hosted runners with Claude Code Max plan authentication, yo
 - Self-hosted runner with Claude Code installed
 - Claude Code authenticated with Max plan
 - Runner must have access to the repository
+- Bun runtime (auto-detected if installed, or installed automatically)
+- **Note**: Bun 1.2.11 requires macOS 13.0+ on Intel Macs. For older macOS versions, pre-install an older Bun version
 
 See [unity-consulting/claude-code-base-action](https://github.com/unity-consulting/claude-code-base-action) for detailed Max plan setup instructions.
 

@@ -70,10 +70,35 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Check for existing Bun installation
+      id: check-bun
+      shell: bash
+      run: |
+        if command -v bun &> /dev/null; then
+          echo "found=true" >> $GITHUB_OUTPUT
+          echo "version=$(bun --version)" >> $GITHUB_OUTPUT
+          echo "path=$(which bun)" >> $GITHUB_OUTPUT
+        else
+          echo "found=false" >> $GITHUB_OUTPUT
+        fi
+
     - name: Install Bun
+      if: ${{ steps.check-bun.outputs.found != 'true' }}
       uses: oven-sh/setup-bun@v2
       with:
         bun-version: 1.2.11
+
+    - name: Ensure Bun is in PATH
+      shell: bash
+      run: |
+        # Common Bun installation paths
+        for BUN_PATH in "$HOME/.bun/bin" "/usr/local/bin" "/opt/homebrew/bin"; do
+          if [[ -f "$BUN_PATH/bun" ]] && [[ ":$PATH:" != *":$BUN_PATH:"* ]]; then
+            echo "$BUN_PATH" >> $GITHUB_PATH
+            echo "Added $BUN_PATH to PATH"
+            break
+          fi
+        done
 
     - name: Install Dependencies
       shell: bash
