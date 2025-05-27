@@ -13,8 +13,6 @@ export async function prepareMcpConfig(
           command: "docker",
           args: [
             "run",
-            "--platform",
-            "linux/amd64",
             "-i",
             "--rm",
             "-e",
